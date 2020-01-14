@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/function%20small()%20%7B%20%5Bnative%20code%5D%20%7D?v=5.1.4">
+
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT, Neveryu, Never_yu, Blog, Node.js, Git, PHP, JAVA, JAVASCRIPT, HTML, CSS, jQuery, Angular, Vue, React" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Nathan's Notes" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="title: 聊聊协程那些事date: 2020-01-14 13:19:29tags:    - IT常识comments: false   来源： 聊聊协程发展那些事  近些年，一些编程语言的新贵Go和Kotlin纷纷引入了协程这个语言特性，使得协程这个似乎十分陌生的概念开始频繁进入大家的视野，为了便于理解，开发者们都把它当作线程的小弟来对待，即轻量级线程。可是真要细说起来，协程其实是很早就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="coroutine-history">
+<meta property="og:url" content="http://yoursite.com/2020/01/14/coroutine-history/index.html">
+<meta property="og:site_name" content="Nathan&#39;s Notes">
+<meta property="og:description" content="title: 聊聊协程那些事date: 2020-01-14 13:19:29tags:    - IT常识comments: false   来源： 聊聊协程发展那些事  近些年，一些编程语言的新贵Go和Kotlin纷纷引入了协程这个语言特性，使得协程这个似乎十分陌生的概念开始频繁进入大家的视野，为了便于理解，开发者们都把它当作线程的小弟来对待，即轻量级线程。可是真要细说起来，协程其实是很早就">
+<meta property="article:published_time" content="2020-01-14T05:19:29.700Z">
+<meta property="article:modified_time" content="2020-01-14T05:21:53.697Z">
+<meta property="article:author" content="Nathan">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/01/14/coroutine-history/"/>
+
+
+
+
+
+  <title>coroutine-history | Nathan's Notes</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Nathan's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">认真的人才有资格开玩笑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-example">
+          <a href="/example" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            示例
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/14/coroutine-history/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nathan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/avatar/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nathan's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">coroutine-history</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-14T13:19:29+08:00">
+                2020-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<p>title: 聊聊协程那些事<br>date: 2020-01-14 13:19:29<br>tags:<br>    - IT常识<br>comments: false</p>
+<hr>
+<blockquote>
+<p>来源： <a href="https://www.jianshu.com/p/cef5ddeb84ff?utm_source=androidweekly.io&utm_medium=website" target="_blank" rel="noopener">聊聊协程发展那些事</a></p>
+</blockquote>
+<p>近些年，一些编程语言的新贵Go和Kotlin纷纷引入了协程这个语言特性，使得协程这个似乎十分陌生的概念开始频繁进入大家的视野，为了便于理解，开发者们都把它当作线程的小弟来对待，即轻量级线程。可是真要细说起来，协程其实是很早就出现的一个变成概念，它的出现甚至是早于线程的，但就编程语言的江湖地位而言，协程是不如线程的，所以向线程低头叫爸爸也不奇怪  </p>
+<p>看了我上面的介绍，大家一定很纳闷，你说协程出现早，有资历，那为啥几十年的编程语言发展下来就就混成了这番咸鱼样？线程出现晚，但怎么星星之火就点着了编程语言的草原。成为了编程语言中的重要概念呢？？ 再者，协程几十年的咸鱼一条，到如今怎么突然有了梦想，翻身把歌唱呢？  </p>
+<p>今天就和大家一起来梳理一下协程的整个发展历程，希望能帮助大家更加理解协程  </p>
+<a id="more"></a>   
+
+<p><strong>协程的出现</strong>  </p>
+<p>我们先来说说协程的历史，以及它是怎么混的那么惨的，毕竟悲催的人生都需要一个解释  </p>
+<p>协程最早诞生于1958年，被应用于汇编语言中（距今已有60多年了），对于它的完整定义发表于1963年，协程是一种通过代码执行的恢复与暂停来实现协作式的多任务的程序组件  </p>
+<p>而与此同时，线程的出现则要晚一些，伴随着操作系统的出现，线程大概在1967年提出。线程作为由操作系统调度最小执行组件，主要用于实现抢占式的多任务   </p>
+<p>既然大家都搞多任务，按说谁也不能比谁强多少啊，况且协程还早生几年，理论上通过自身努力发展，在编程语言中占据核心地位也是极有可能的   </p>
+<p>但是这协程的发展啊，一方面当然要靠自我奋斗，另一方面，也要考虑历史进程。而上个世纪八九十年代，是计算机疯狂朝着小型化和个人化的方向演进的时代，计算机非常依赖操作系统来提供拥挤交互和压榨CPU的最大性能，而操作系统怎么来压榨计算机性能的呢？靠多线程。操作系统随着个人计算机的普及以后，编程语言自然也开始依赖操作系统提供的接口来驾驭计算机了，线程成了几乎所有编程语言跳不过的一个重要概念，并一直延续至今   </p>
+<p>到这里，你可能要问了，大家都是搞多任务的，为什么线程能提升CPU的资源利用率，协程不能呢？   </p>
+<p>当然由很多其他的原因能解释，但最本质的原因仍然是协程和线程是由显著区别的两个概念，到这里我们就要回过头聊一聊什么是协作式多任务，什么叫抢占式多任务？以及这两种任务是否是同一种概念    </p>
+<p><strong>协作式多任务</strong>  </p>
+<p>上图是一个寿司生产的部分工序，我们可以把途中的传送转盘和机器抓手视为两个任务，一起协作完成了食物的生产。这就是协作式多任务。协作式的多任务要求任务之间相互熟悉，才能完成协作  </p>
+<p><strong>抢占式多任务</strong>  </p>
+<p>上图是喂金鱼的场景，一把饲料下去，所有金鱼马上围上来一抢而空，这里每个金鱼都相当于一个任务线程，这就是抢占式多任务。而抢占式多任务（线程）之间不需要了解和配合，只有竞争关系  </p>
+<p>上面两张图，比较生动的展示了协作式多任务（协程）和抢占式多任务（多线程）之间的区别。这里我们能够发现，协程更加适合那些相互熟悉的任务组件通过密切配合协作来完成某些工作，协作式的多任务里的“任务”是一个子程序（可称之为函数）。 抢占式多任务里的任务则是指能抢占资源的组件或代码（其实就是线程），这里的多任务也就是多线程。所以说协程和线程本来就是差异非常大的两种概念，他们的能力是不同的，而线程的这种能力正好迎合了那个时代的需求。自我奋斗+历史进程是线程成功的主要原因   </p>
+<p>另一方面，也由于协程是基于编程语言层面的一种概念，它并没有统一定义的接口，因此在不同的语言中实现后的效果是不同的，这也会对开发者造成极大的困扰，不利于它的推广。而反观线程，通过操作系统的统一接口，定义了大体相同的线程使用方式，保证了不同的编程语言都对线程的使用是大体一致   </p>
+<p>讲到这里，我们来总结下，协程早期发展不顺的原因   </p>
+<ul>
+<li><ol>
+<li>协程没有代表先进生产力的发展要求，先进文化的前进方向，和最广泛开发者的根本利益  </li>
+</ol>
+</li>
+<li><ol start="2">
+<li>协程在不同编程语言中，它的实际表现有差异，非常不利于开发者的理解和使用  </li>
+</ol>
+</li>
+</ul>
+<p>以上两点就是协程几十年以来一直不温不火的原因。我们也看到，虽然看起来都在搞多任务，但是协程和线程实际是没有太多交集的   </p>
+<p><strong>咸鱼翻身</strong>  </p>
+<p>虽说协程这种协作式多任务的组件不能提高程序执行的效率，似乎没有太广泛的应用前景，但这协程啊，也不能随意否定自己，因为不知道什么时候，你就突然被历史进程关照了   </p>
+<p>但是还要从线程说起，虽然线程成为编程世界的重要概念，但是在多年的使用过程中，开发者们也逐渐意识到了它的痛点：  </p>
+<ul>
+<li>线程之间（异步代码） 难以交互难度比较大，往往只能用callback，大量callback会让代码难以阅读和理解，最终让项目变得难以维护   </li>
+</ul>
+<p>简单来说就是在<code>在开发者端，线程之间如何更方便的交互</code>   </p>
+<p>而这里协程能做什么呢？   </p>
+<p>或许我再重新表达一下线程的痛点： <code>在开发者端，线程之间如何更方便的协作</code>   </p>
+<p>回想一下，我们是怎么介绍协程的？协作式多任务对吧，还记得上图中的转盘和机器抓手的协作么？我们当时说这两个文物更像是两个函数的协作，但如果把转盘和机器抓手视作两个线程呢？<br>借助编译器，把线程封装成一个个能暂停和恢复的函数，线程是不是就可以像协程设计的那样协作呢？    </p>
+<p>我们还是从代码层面来看看如今协程是如何被使用的吧。设计一个简单的需求： 社区内用户发帖时，需要先从后台验证发帖权限，请求两个接口，那么可能我们需要尝试开启两个线程先后来完成   </p>
+<ul>
+<li>普通的callback代码  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">fun tryPost()&#123;</span><br><span class="line">    &#x2F;&#x2F; 先通过接口验证权限 （实际开启了一个线程，然后等待回调）</span><br><span class="line">    findUserPermission(user,callback())&#123;</span><br><span class="line">        public void onSuccess(UserPermission response)&#123;</span><br><span class="line">            &#x2F;&#x2F; 回调 如果成功 ,检查是否有权限</span><br><span class="line">            if(response.hasPermission)&#123;</span><br><span class="line">            &#x2F;&#x2F; 如果有权限，则访问发帖接口 （同样开启线程，等待回调）</span><br><span class="line">                postContent(content,callback())&#123; </span><br><span class="line">                    public void onSuccess(Result response)&#123;</span><br><span class="line">                        &#x2F;&#x2F; handle successful response</span><br><span class="line">                    &#125;</span><br><span class="line">                    public void onFail()&#123;</span><br><span class="line">                        </span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                &#x2F;&#x2F; 如果无权限，则......</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        public void onFail()&#123;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line">这是比较常见的做法，我们需要访问两次接口，而交互只能在callback中进行，但是其实代码已经很难看了，如果还有其他逻辑的话，那代码只会更加冗杂，难以维护。  </span><br><span class="line"></span><br><span class="line">那协程是怎么解决这种痛点的呢？我们来看看Kotlin协程的代码如何实现这种需求  </span><br><span class="line"></span><br><span class="line">- kotlin 协程代码</span><br></pre></td></tr></table></figure>
+// 函数通过suspend关键字标识，可以被协程调用，具备暂停、恢复的能力，实际上仍然使用了io线程来完成接口请求<br>suspend fun tryFindUserPermission(): PermissionResponse {<br>  return withContext(Dispatchers.IO) {<pre><code>findUserPermission(user)</code></pre>  }<br>}</li>
+</ul>
+<p>// 函数通过suspend标识，可以被协程调用<br>suspend fun post(): Result {<br>    return withContext(Dispatchers.IO) {<br>        postContent(content)<br>    }<br>}</p>
+<p>fun tryPost() {<br>    // 启动一个协程<br>    launch {<br>        // 代码执行这一行，让出cpu，进入暂停状态，等待请求成功后，会恢复执行<br>        var response = tryFindUserPermission()  // 向后端访问用户权限<br>        if (response.hasPersmission) {<br>            // 有权限则开始发帖（开启线程，让出cpu，暂停执行，等待恢复）<br>            var response = post()<br>            // handle response if need<br>        }<br>    }<br>}</p>
+<pre><code>
+可以看到，在kotlin中，协程通过把线程里的代码封装成一种能暂停/恢复的函数，让多线程之间的交互就像普通的函数一样简单，不需要callback  
+
+通过上面的伪代码，我们能够比较清楚看到，协程能非常明显的简化线程之间的协作复杂度，让我们可以以便携同步代码的方式来便携异步代码，极大的简化你的逻辑，让你的代码更容易维护  
+
+那么协程是如何做到的呢？  
+
+虽然不同的语言中，协程有所差异，但是原理都差不多，`编程语言的编译器通过一些关键字（kotlin用suspend）来修饰函数，在编译期间根据关键字生成一些线程相关的代码来实现函数的暂停、恢复的功能，从而实现把线程相关的代码留在编译期间产生，在开发层面，就能提供像普通函数一样的协作方式 `   
+
+因为解决了这个痛点，协程开始变得越来越受开发者欢迎。而协程通过编译器的帮组把线程相关的代码留在了编译期间产生，开发者可以通过操作协程就能达到使用线程的目的，所以现在大家任务协程是一种轻量级的线程   
+
+&gt; 对于多线程的协作，或者说异步代码之间的协作并不是只有协程一家解决方案，在js中，有promise，Java中有Rxjava等等，他们都致力于解决异步编程的相关问题，`希望能以编写同步代码的方式来写异步代码`，目前来看，他们都做的还不错   
+
+**总结**  
+
+大家对协程的理解有很多分歧，但是对我而言，协程其实得分两个阶段来理解  
+
+- 协程诞生之初，只是用来解决编程中某些特殊问题的编程组件，它的多任务更像多个函数的组合协作执行，那个时候，协程其实更像是一种具备暂停、恢复的函数。 但是这种功能似乎不受欢迎，因此协程在很长的一段时间内都是比较小众的（此时协程和线程的关系并不大）  
+
+
+- 如今它成为底层支持多线程的协作式多任务组件，很好的解决了线程协作的痛点，同时也逐渐变得越来越受欢迎，协程和线程的关系更加密切，他们似乎也变得更加相似（如今你可以把协程理解为一种轻量级线程）   
+
+而协程的发展历程，其实也就是经历了这两个阶段</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/08/amateur-and-work/" rel="next" title="业余与工作">
+                <i class="fa fa-chevron-left"></i> 业余与工作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/avatar/avatar.png"
+                alt="Nathan" />
+            
+              <p class="site-author-name" itemprop="name">Nathan</p>
+              <p class="site-description motion-element" itemprop="description">Stay Hungry,Stay Foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nathan</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

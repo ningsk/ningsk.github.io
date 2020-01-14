@@ -2,13 +2,15 @@
 
 
 
+  
 
-<html class="theme-next pisces" lang="zh-Hans">
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<meta name="theme-color" content="">
+<meta name="theme-color" content="#222">
 
 
 
@@ -38,48 +40,22 @@
 
   
   
-  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Courier New:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
 
 
 
-<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/function%20small()%20%7B%20%5Bnative%20code%5D%20%7D?v=5.0.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/function%20small()%20%7B%20%5Bnative%20code%5D%20%7D?v=5.1.4">
 
 
 
@@ -115,21 +91,21 @@
   var CONFIG = {
     root: '/',
     scheme: 'Pisces',
-    version: '5.0.1',
-    sidebar: {"position":"left","display":"hide"},
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
-    tabs: ,
-    motion: "",
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
-      userId: 'undefined',
+      userId: '0',
       author: '博主'
     },
     algolia: {
       applicationID: '',
       apiKey: '',
       indexName: '',
-      hits: "",
-      labels: ""
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
     }
   };
 </script>
@@ -300,6 +276,138 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/14/coroutine-history/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Nathan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/avatar/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nathan's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/01/14/coroutine-history/" itemprop="url">coroutine-history</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-14T13:19:29+08:00">
+                2020-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <hr>
+<p>title: 聊聊协程那些事<br>date: 2020-01-14 13:19:29<br>tags:<br>    - IT常识<br>comments: false</p>
+<hr>
+<blockquote>
+<p>来源： <a href="https://www.jianshu.com/p/cef5ddeb84ff?utm_source=androidweekly.io&utm_medium=website" target="_blank" rel="noopener">聊聊协程发展那些事</a></p>
+</blockquote>
+<p>近些年，一些编程语言的新贵Go和Kotlin纷纷引入了协程这个语言特性，使得协程这个似乎十分陌生的概念开始频繁进入大家的视野，为了便于理解，开发者们都把它当作线程的小弟来对待，即轻量级线程。可是真要细说起来，协程其实是很早就出现的一个变成概念，它的出现甚至是早于线程的，但就编程语言的江湖地位而言，协程是不如线程的，所以向线程低头叫爸爸也不奇怪  </p>
+<p>看了我上面的介绍，大家一定很纳闷，你说协程出现早，有资历，那为啥几十年的编程语言发展下来就就混成了这番咸鱼样？线程出现晚，但怎么星星之火就点着了编程语言的草原。成为了编程语言中的重要概念呢？？ 再者，协程几十年的咸鱼一条，到如今怎么突然有了梦想，翻身把歌唱呢？  </p>
+<p>今天就和大家一起来梳理一下协程的整个发展历程，希望能帮助大家更加理解协程  </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/01/14/coroutine-history/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/08/amateur-and-work/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -324,6 +432,16 @@
 
         <div class="post-meta">
           <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-08T14:28:00+08:00">
+                2020-01-08
+              </time>
             
 
             
@@ -365,7 +483,7 @@
 <p>而哲学不同，我希望可以在那两个百花齐放的年代了解到我国哲学的演变，但是更多的我喜欢的是西方哲学。   </p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/01/08/amateur-and-work/" rel="contents">
+            <a class="btn" href="/2020/01/08/amateur-and-work/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -441,6 +559,16 @@
         <div class="post-meta">
           <span class="post-time">
             
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-07T17:20:00+08:00">
+                2020-01-07
+              </time>
+            
 
             
 
@@ -480,7 +608,7 @@
 <p>有一次，我看见一头骡子缓缓走着，突然停下来，低着头，毫无表情地一动不动，不知道是累了还是不想走了。监工见状，立即拿棍子戳它，它茫然地抬起头，又顺从地继续向前走了  </p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/01/07/mule/" rel="contents">
+            <a class="btn" href="/2020/01/07/mule/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -556,6 +684,16 @@
         <div class="post-meta">
           <span class="post-time">
             
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-06T18:20:00+08:00">
+                2020-01-06
+              </time>
+            
 
             
 
@@ -596,7 +734,7 @@
 <p>从2016年毕业整天跟在dailc屁股后面，看他如何从Android转到前端，从而在其帮助下（看他的博客，以及公司开源的一些解决方案），我走向了跨平台之路，再到2017年开始用Dcloud方案做app，峰回路转18年回到了捷瑞数字去做原生开发，一年后，决定离职。同时也开启了自己19年的<code>彷徨</code>一年    </p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/01/06/summary-and-impressions-at-the-end-of-2019/" rel="contents">
+            <a class="btn" href="/2020/01/06/summary-and-impressions-at-the-end-of-2019/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -672,6 +810,16 @@
         <div class="post-meta">
           <span class="post-time">
             
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-05T19:33:00+08:00">
+                2020-01-05
+              </time>
+            
 
             
 
@@ -713,7 +861,7 @@
 <p>我16年毕业，辗转干了Android、Java、前端，又从前端干回Android，心里其实有时候莫名的烦躁，恐惧。恐惧前端的飞速变化，有可能导致自己被淘汰。总是在学习，总是在莫名的焦虑，直到我看到小菜分享的《职业思考：技术人需要突破的10个困局》，才明白自己陷入了困局  </p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/01/05/where-to-go/" rel="contents">
+            <a class="btn" href="/2020/01/05/where-to-go/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -801,7 +949,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -832,45 +980,11 @@
           
 
           
-            <div class="links-of-author motion-element">
-                
-                  <span class="links-of-author-item">
-                    <a href="https://github.com/ningsk" target="_blank" title="Github">
-                      
-                        <i class="fa fa-fw fa-globe"></i>Github</a>
-                  </span>
-                
-            </div>
-          
 
           
           
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
-              </a>
-            </div>
-          
 
           
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://ningsk.github.io/ningsk" title="个人首页" target="_blank">个人首页</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="/reward" title="打赏" target="_blank">打赏</a>
-                  </li>
-                
-              </ul>
-            </div>
           
 
           
@@ -910,26 +1024,6 @@
 
 
         
-<div class="busuanzi-count">
-  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="site-uv">
-      您是第
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-      个小伙伴
-    </span>
-  
-
-  
-    <span class="site-pv">
-      本站总浏览
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-      次
-    </span>
-  
-</div>
-
 
 
 
@@ -983,60 +1077,60 @@
 
   
   
-    <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
 
-  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
 
 
 
   
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -1084,21 +1178,6 @@
   
 
   
-<script>
-(function(){
-    var bp = document.createElement('script');
-    var curProtocol = window.location.protocol.split(':')[0];
-    if (curProtocol === 'https') {
-        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
-    }
-    else {
-        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-    }
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(bp, s);
-})();
-</script>
-
 
   
   
